@@ -44,3 +44,17 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+/* Scrollbar styling for activity feed */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #D4D4CF;
+  border-radius: 2px;
+}

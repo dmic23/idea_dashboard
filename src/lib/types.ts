@@ -70,3 +70,49 @@ export const STAGE_LABELS: Record<PipelineStage, string> = {
   operating: "Operating",
   exited: "Exited",
 };
+
+export const DECISION_LABELS: Record<string, string> = {
+  ADVANCE: "Advance",
+  ITERATE: "Iterate",
+  KILL: "Kill",
+  ESCALATE: "Escalate",
+  HOLD: "Hold",
+};
+
+export const STATUS_LABELS: Record<string, string> = {
+  active: "Active",
+  paused: "Paused",
+  killed: "Killed",
+  exited: "Exited",
+};
+
+export interface DashboardBusiness {
+  id: string;
+  idea_id: string;
+  idea_title: string;
+  business_name: string;
+  status: string;
+  deploy_url: string | null;
+  repo_url: string | null;
+  revenue: number;
+  costs: number;
+  profit: number;
+  mrr: number;
+  users: number;
+  churn_rate: number;
+  created_at: string;
+  updated_at: string;
+  synced_at: string;
+}
+
+export interface DashboardPattern {
+  id: string;
+  pattern_type: string;
+  description: string;
+  confidence: number;
+  sample_size: number;
+  conditions: Record<string, unknown>;
+  outcome: Record<string, unknown>;
+  created_at: string;
+  synced_at: string;
+}

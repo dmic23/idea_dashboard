@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAFAF8;
+  --foreground: #0A0A0A;
 }
 
 @theme inline {
+  /* Background */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Ivory palette */
+  --color-ivory: #FAFAF8;
+  --color-ivory-warm: #F5F4F0;
+
+  /* Neutrals */
+  --color-black: #0A0A0A;
+  --color-graphite: #3D3D3D;
+  --color-stone: #8A8A86;
+  --color-mist: #D4D4CF;
+
+  /* Accent */
+  --color-indigo: #1A1A6B;
+  --color-indigo-deep: #12124D;
+
+  /* Status */
+  --color-status-green: #1B6B3A;
+  --color-status-yellow: #B8860B;
+  --color-status-red: #8B2020;
+  --color-status-gray: #8A8A86;
+
+  /* Fonts */
+  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-geist-sans), "SF Pro Display", system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Border radius */
+  --radius-precision: 4px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }

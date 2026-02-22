@@ -3,7 +3,7 @@ import { PipelineFunnel } from "@/components/pipeline-funnel";
 import { ActivityFeed } from "@/components/activity-feed";
 import type { ActivityEvent, DashboardIdea } from "@/lib/types";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const supabase = await createServerSupabaseClient();

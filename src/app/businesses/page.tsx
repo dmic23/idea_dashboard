@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { BusinessGrid } from "@/components/business-grid";
 import type { DashboardBusiness } from "@/lib/types";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function BusinessesPage() {
   const supabase = await createServerSupabaseClient();

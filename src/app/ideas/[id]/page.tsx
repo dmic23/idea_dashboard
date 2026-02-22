@@ -12,7 +12,7 @@ import type {
   ActivityEvent,
 } from "@/lib/types";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 interface IdeaPageProps {
   params: Promise<{ id: string }>;

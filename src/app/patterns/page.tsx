@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { PatternList } from "@/components/pattern-list";
 import type { DashboardPattern } from "@/lib/types";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function PatternsPage() {
   const supabase = await createServerSupabaseClient();

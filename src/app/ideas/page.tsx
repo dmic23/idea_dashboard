@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { IdeasTable } from "@/components/ideas-table";
 import type { DashboardIdea } from "@/lib/types";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function IdeasPage() {
   const supabase = await createServerSupabaseClient();

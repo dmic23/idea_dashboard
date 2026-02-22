@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { HealthOverview } from "@/components/health-overview";
 import type { HealthSnapshot, ActivityEvent } from "@/lib/types";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function HealthPage() {
   const supabase = await createServerSupabaseClient();

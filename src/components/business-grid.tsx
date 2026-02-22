@@ -7,9 +7,9 @@ interface BusinessGridProps {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  healthy: "bg-status-green/10 text-status-green",
-  warning: "bg-status-yellow/10 text-status-yellow",
-  critical: "bg-status-red/10 text-status-red",
+  operating: "bg-status-green/10 text-status-green",
+  paused: "bg-status-yellow/10 text-status-yellow",
+  killed: "bg-status-red/10 text-status-red",
 };
 
 function formatCurrency(value: number): string {
@@ -38,10 +38,10 @@ export function BusinessGrid({ businesses }: BusinessGridProps) {
           {/* Header */}
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="font-serif text-lg text-black">
-                {biz.business_name || biz.idea_title}
-              </h3>
-              <p className="text-xs text-stone mt-0.5">{biz.idea_title}</p>
+              <h3 className="font-serif text-lg text-black">{biz.name}</h3>
+              {biz.domain && (
+                <p className="text-xs text-stone mt-0.5">{biz.domain}</p>
+              )}
             </div>
             <span
               className={`text-xs px-2 py-0.5 rounded-precision font-mono ${
@@ -85,18 +85,11 @@ export function BusinessGrid({ businesses }: BusinessGridProps) {
           </div>
 
           {/* Links */}
-          {(biz.deploy_url || biz.repo_url) && (
+          {biz.deploy_url && (
             <div className="flex gap-4 pt-2 border-t border-mist/50">
-              {biz.deploy_url && (
-                <ExternalLink href={biz.deploy_url} className="text-xs">
-                  Live
-                </ExternalLink>
-              )}
-              {biz.repo_url && (
-                <ExternalLink href={biz.repo_url} className="text-xs">
-                  Repo
-                </ExternalLink>
-              )}
+              <ExternalLink href={biz.deploy_url} className="text-xs">
+                Live
+              </ExternalLink>
             </div>
           )}
         </div>

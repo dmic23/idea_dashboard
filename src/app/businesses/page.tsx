@@ -10,7 +10,7 @@ export default async function BusinessesPage() {
   const { data: businesses } = await supabase
     .from("dashboard_businesses")
     .select("*")
-    .order("updated_at", { ascending: false });
+    .order("launched_at", { ascending: false });
 
   return (
     <div>

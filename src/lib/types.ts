@@ -89,19 +89,19 @@ export const STATUS_LABELS: Record<string, string> = {
 export interface DashboardBusiness {
   id: string;
   idea_id: string;
-  idea_title: string;
-  business_name: string;
+  name: string;
+  domain: string | null;
   status: string;
-  deploy_url: string | null;
-  repo_url: string | null;
+  disposition: string;
   revenue: number;
   costs: number;
   profit: number;
   mrr: number;
   users: number;
+  active_users: number;
   churn_rate: number;
-  created_at: string;
-  updated_at: string;
+  launched_at: string | null;
+  deploy_url: string | null;
   synced_at: string;
 }
 
@@ -113,6 +113,5 @@ export interface DashboardPattern {
   sample_size: number;
   conditions: Record<string, unknown>;
   outcome: Record<string, unknown>;
-  created_at: string;
   synced_at: string;
 }

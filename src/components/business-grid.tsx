@@ -85,11 +85,23 @@ export function BusinessGrid({ businesses }: BusinessGridProps) {
           </div>
 
           {/* Links */}
-          {biz.deploy_url && (
-            <div className="flex gap-4 pt-2 border-t border-mist/50">
-              <ExternalLink href={biz.deploy_url} className="text-xs">
-                Live
-              </ExternalLink>
+          {(biz.deploy_url || biz.repo_url || biz.validation_url) && (
+            <div className="flex flex-wrap gap-4 pt-2 border-t border-mist/50">
+              {biz.deploy_url && (
+                <ExternalLink href={biz.deploy_url} className="text-xs">
+                  Live Site
+                </ExternalLink>
+              )}
+              {biz.validation_url && (
+                <ExternalLink href={biz.validation_url} className="text-xs">
+                  Landing Page
+                </ExternalLink>
+              )}
+              {biz.repo_url && (
+                <ExternalLink href={biz.repo_url} className="text-xs">
+                  GitHub
+                </ExternalLink>
+              )}
             </div>
           )}
         </div>

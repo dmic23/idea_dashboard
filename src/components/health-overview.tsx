@@ -3,7 +3,16 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import type { HealthSnapshot, ActivityEvent } from "@/lib/types";
-import { formatTimeAgo, EVENT_ICONS, SEVERITY_COLORS } from "@/lib/format";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { formatTimeAgo, SEVERITY_COLORS, SEVERITY_BORDER_COLORS } from "@/lib/format";
+import {
+  Heart,
+  AlertTriangle,
+  RefreshCw,
+  Circle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   LineChart,
   Line,
@@ -21,10 +30,16 @@ interface HealthOverviewProps {
 }
 
 const STATUS_DOT: Record<string, string> = {
-  healthy: "bg-status-green",
-  degraded: "bg-status-yellow",
-  down: "bg-status-red",
-  unknown: "bg-stone",
+  healthy: "bg-status-green animate-pulse-dot",
+  degraded: "bg-status-amber animate-pulse-dot",
+  down: "bg-status-red animate-pulse-dot",
+  unknown: "bg-zinc-700",
+};
+
+const EVENT_ICONS: Record<string, React.ElementType> = {
+  health_check: Heart,
+  circuit_breaker_change: AlertTriangle,
+  orchestrator_run: RefreshCw,
 };
 
 function statusLabel(val: string | undefined): string {
@@ -107,106 +122,127 @@ export function HealthOverview({
       </div>
 
       {/* Ideas Processed Chart */}
-      <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-        <h2 className="font-serif text-lg text-black mb-4">
-          Ideas Processed (24h)
-        </h2>
-        {chartData.length === 0 ? (
-          <p className="text-stone text-sm">No data available yet.</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={240}>
-            <LineChart data={chartData}>
-              <CartesianGrid stroke="#D4D4CF" strokeDasharray="3 3" />
-              <XAxis
-                dataKey="time"
-                tick={{ fill: "#8A8A86", fontSize: 11 }}
-                tickLine={false}
-                axisLine={{ stroke: "#D4D4CF" }}
-              />
-              <YAxis
-                tick={{ fill: "#8A8A86", fontSize: 11 }}
-                tickLine={false}
-                axisLine={{ stroke: "#D4D4CF" }}
-                allowDecimals={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#F5F4F0",
-                  border: "1px solid #D4D4CF",
-                  borderRadius: "4px",
-                  fontSize: 12,
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="processed"
-                stroke="#1A1A6B"
-                strokeWidth={2}
-                dot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-medium text-zinc-50">
+            Ideas Processed (24h)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {chartData.length === 0 ? (
+            <p className="text-zinc-500 text-sm">No data available yet.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <LineChart data={chartData}>
+                <CartesianGrid stroke="#27272A" strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="time"
+                  tick={{ fill: "#71717A", fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={{ stroke: "#27272A" }}
+                />
+                <YAxis
+                  tick={{ fill: "#71717A", fontSize: 11 }}
+                  tickLine={false}
+                  axisLine={{ stroke: "#27272A" }}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#18181B",
+                    border: "1px solid #27272A",
+                    borderRadius: "6px",
+                    fontSize: 12,
+                    color: "#D4D4D8",
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="processed"
+                  stroke="#10B981"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Circuit Breakers */}
       {circuitBreakers.length > 0 && (
-        <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-          <h2 className="font-serif text-lg text-black mb-4">
-            Circuit Breakers
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {circuitBreakers.map(([service, state]) => (
-              <div
-                key={service}
-                className="flex items-center gap-2 text-sm"
-              >
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    state === "CLOSED"
-                      ? "bg-status-green"
-                      : state === "HALF_OPEN"
-                        ? "bg-status-yellow"
-                        : "bg-status-red"
-                  }`}
-                />
-                <span className="text-graphite">{service}</span>
-                <span className="text-stone font-mono text-xs ml-auto">
-                  {state}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-medium text-zinc-50">
+              Circuit Breakers
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {circuitBreakers.map(([service, state]) => (
+                <div
+                  key={service}
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <span
+                    className={cn(
+                      "w-2 h-2 rounded-full",
+                      state === "CLOSED"
+                        ? "bg-status-green"
+                        : state === "HALF_OPEN"
+                          ? "bg-status-amber"
+                          : "bg-status-red"
+                    )}
+                  />
+                  <span className="text-zinc-300">{service}</span>
+                  <span className="text-zinc-500 font-mono text-xs ml-auto">
+                    {state}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Health Events */}
-      <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-        <h2 className="font-serif text-lg text-black mb-4">Recent Events</h2>
-        {events.length === 0 ? (
-          <p className="text-stone text-sm">No health events recorded.</p>
-        ) : (
-          <div className="space-y-3 max-h-[400px] overflow-y-auto">
-            {events.map((event) => (
-              <div key={event.id} className="flex items-start gap-3 text-sm">
-                <span className="text-stone font-mono text-xs w-16 shrink-0 pt-0.5">
-                  {formatTimeAgo(event.timestamp)}
-                </span>
-                <span className="font-mono text-xs text-stone w-6 shrink-0 pt-0.5">
-                  {EVENT_ICONS[event.event_type] || ".."}
-                </span>
-                <span className={SEVERITY_COLORS[event.severity] || "text-graphite"}>
-                  {formatEventDetail(event)}
-                </span>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-medium text-zinc-50">Recent Events</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {events.length === 0 ? (
+            <p className="text-zinc-500 text-sm">No health events recorded.</p>
+          ) : (
+            <ScrollArea className="h-[400px]">
+              <div className="space-y-1">
+                {events.map((event) => {
+                  const Icon = EVENT_ICONS[event.event_type] || Circle;
+                  const borderColor = SEVERITY_BORDER_COLORS[event.severity] || "border-l-zinc-800";
+                  return (
+                    <div
+                      key={event.id}
+                      className={`flex items-start gap-3 text-sm px-3 py-2 rounded-sm border-l-2 ${borderColor}`}
+                    >
+                      <Icon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
+                      <span className={`flex-1 ${SEVERITY_COLORS[event.severity] || "text-zinc-300"}`}>
+                        {formatEventDetail(event)}
+                      </span>
+                      <span className="text-zinc-600 font-mono text-xs shrink-0">
+                        {formatTimeAgo(event.timestamp)}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </ScrollArea>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Last Updated */}
       {snapshot && (
-        <p className="text-xs text-stone">
+        <p className="text-xs text-zinc-600">
           Last health check: {new Date(snapshot.timestamp).toLocaleString()}
         </p>
       )}
@@ -225,16 +261,18 @@ function StatusCard({
 }) {
   const dotColor = STATUS_DOT[status || "unknown"] || STATUS_DOT.unknown;
   return (
-    <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-      <div className="flex items-center gap-2 mb-1">
-        <span className={`w-2.5 h-2.5 rounded-full ${dotColor}`} />
-        <span className="text-xs text-stone">{label}</span>
-      </div>
-      <span className="font-mono text-lg text-black">
-        {statusLabel(status)}
-      </span>
-      {detail && <p className="text-xs text-stone mt-1">{detail}</p>}
-    </div>
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex items-center gap-2 mb-1">
+          <span className={cn("w-2.5 h-2.5 rounded-full", dotColor)} />
+          <span className="text-xs text-zinc-500">{label}</span>
+        </div>
+        <span className="font-mono text-lg text-zinc-50">
+          {statusLabel(status)}
+        </span>
+        {detail && <p className="text-xs text-zinc-500 mt-1">{detail}</p>}
+      </CardContent>
+    </Card>
   );
 }
 

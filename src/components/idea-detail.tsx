@@ -1,11 +1,41 @@
 import Link from "next/link";
+import {
+  ArrowLeft,
+  ArrowRight,
+  X,
+  Plus,
+  Star,
+  RefreshCw,
+  Heart,
+  Rocket,
+  Globe,
+  AlertTriangle,
+  Share2,
+  Circle,
+} from "lucide-react";
 import type { DashboardIdea, ActivityEvent } from "@/lib/types";
 import { DECISION_LABELS } from "@/lib/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { StageBadge } from "@/components/stage-badge";
 import { ScoreDisplay } from "@/components/score-display";
 import { StageTimeline } from "@/components/stage-timeline";
 import { ExternalLink } from "@/components/external-link";
-import { formatTimeAgo, formatEvent, EVENT_ICONS, SEVERITY_COLORS } from "@/lib/format";
+import { formatTimeAgo, formatEvent, SEVERITY_COLORS, SEVERITY_BORDER_COLORS } from "@/lib/format";
+
+const EVENT_ICONS: Record<string, React.ElementType> = {
+  idea_advanced: ArrowRight,
+  idea_killed: X,
+  idea_created: Plus,
+  review_completed: Star,
+  orchestrator_run: RefreshCw,
+  health_check: Heart,
+  mvp_deployed: Rocket,
+  landing_page_deployed: Globe,
+  circuit_breaker_change: AlertTriangle,
+  social_post_created: Share2,
+};
 
 interface IdeaDetailProps {
   idea: DashboardIdea;
@@ -14,163 +44,192 @@ interface IdeaDetailProps {
 
 export function IdeaDetail({ idea, events }: IdeaDetailProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 motion-preset-fade motion-duration-300">
       {/* Back link */}
       <Link
         href="/ideas"
-        className="text-sm text-stone hover:text-graphite transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
       >
-        &larr; All Ideas
+        <ArrowLeft className="h-3.5 w-3.5" />
+        All Ideas
       </Link>
 
       {/* Header */}
-      <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <h1 className="font-serif text-2xl text-black tracking-tight">
-              {idea.title}
-            </h1>
-            <p className="text-sm text-graphite leading-relaxed max-w-2xl">
-              {idea.description}
-            </p>
-            {idea.domain_tags.length > 0 && (
-              <div className="flex gap-2 pt-1">
-                {idea.domain_tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs text-stone bg-ivory px-2 py-0.5 rounded-precision"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-start justify-between gap-4">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-semibold text-zinc-50 tracking-tight">
+                {idea.title}
+              </h1>
+              <p className="text-sm text-zinc-400 leading-relaxed max-w-2xl">
+                {idea.description}
+              </p>
+              {idea.domain_tags.length > 0 && (
+                <div className="flex gap-2 pt-1">
+                  {idea.domain_tags.map((tag) => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col items-end gap-2 shrink-0">
+              <StageBadge stage={idea.stage} />
+              <span className="text-xs text-zinc-500">
+                {idea.status === "active" ? `${idea.days_in_stage}d in stage` : idea.status}
+              </span>
+            </div>
           </div>
-          <div className="flex flex-col items-end gap-2 shrink-0">
-            <StageBadge stage={idea.stage} />
-            <span className="text-xs text-stone">
-              {idea.status === "active" ? `${idea.days_in_stage}d in stage` : idea.status}
-            </span>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Stage Timeline */}
-      <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-        <h2 className="font-serif text-lg text-black mb-3">Progress</h2>
-        <StageTimeline currentStage={idea.stage} />
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-medium text-zinc-50">Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <StageTimeline currentStage={idea.stage} />
+        </CardContent>
+      </Card>
 
       {/* Score & Decision */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-          <div className="text-xs text-stone mb-1">Latest Score</div>
-          <ScoreDisplay score={idea.latest_score} className="text-2xl" />
-        </div>
-        <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-          <div className="text-xs text-stone mb-1">Decision</div>
-          <span className="font-mono text-lg text-black">
-            {idea.latest_decision
-              ? DECISION_LABELS[idea.latest_decision] || idea.latest_decision
-              : "--"}
-          </span>
-        </div>
-        <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-          <div className="text-xs text-stone mb-1">Reviews</div>
-          <span className="font-mono text-lg text-black">{idea.review_count}</span>
-        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-xs text-zinc-500 mb-1">Latest Score</div>
+            <ScoreDisplay score={idea.latest_score} className="text-2xl" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-xs text-zinc-500 mb-1">Decision</div>
+            <span className="font-mono text-lg text-zinc-50">
+              {idea.latest_decision
+                ? DECISION_LABELS[idea.latest_decision] || idea.latest_decision
+                : "--"}
+            </span>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-xs text-zinc-500 mb-1">Reviews</div>
+            <span className="font-mono text-lg text-zinc-50">{idea.review_count}</span>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Validation Metrics (conditional) */}
+      {/* Validation Metrics */}
       {(idea.validation_url || idea.visitors > 0 || idea.signups > 0) && (
-        <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-          <h2 className="font-serif text-lg text-black mb-4">Validation</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <div className="text-xs text-stone mb-1">Visitors</div>
-              <span className="font-mono text-lg text-black">{idea.visitors}</span>
-            </div>
-            <div>
-              <div className="text-xs text-stone mb-1">Signups</div>
-              <span className="font-mono text-lg text-black">{idea.signups}</span>
-            </div>
-            <div>
-              <div className="text-xs text-stone mb-1">Conversion</div>
-              <span className="font-mono text-lg text-black">
-                {idea.conversion_rate > 0
-                  ? `${(idea.conversion_rate * 100).toFixed(1)}%`
-                  : "--"}
-              </span>
-            </div>
-            {idea.validation_url && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-medium text-zinc-50">Validation</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
-                <div className="text-xs text-stone mb-1">Landing Page</div>
-                <ExternalLink href={idea.validation_url} className="text-sm">
-                  Visit
-                </ExternalLink>
+                <div className="text-xs text-zinc-500 mb-1">Visitors</div>
+                <span className="font-mono text-lg text-zinc-50">{idea.visitors}</span>
               </div>
-            )}
-          </div>
-        </div>
+              <div>
+                <div className="text-xs text-zinc-500 mb-1">Signups</div>
+                <span className="font-mono text-lg text-zinc-50">{idea.signups}</span>
+              </div>
+              <div>
+                <div className="text-xs text-zinc-500 mb-1">Conversion</div>
+                <span className="font-mono text-lg text-zinc-50">
+                  {idea.conversion_rate > 0
+                    ? `${(idea.conversion_rate * 100).toFixed(1)}%`
+                    : "--"}
+                </span>
+              </div>
+              {idea.validation_url && (
+                <div>
+                  <div className="text-xs text-zinc-500 mb-1">Landing Page</div>
+                  <ExternalLink href={idea.validation_url} className="text-sm">
+                    Visit
+                  </ExternalLink>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
-      {/* MVP Info (conditional) */}
+      {/* MVP Info */}
       {(idea.mvp_status || idea.deploy_url || idea.repo_url) && (
-        <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-          <h2 className="font-serif text-lg text-black mb-4">MVP</h2>
-          <div className="flex flex-wrap gap-6">
-            {idea.mvp_status && (
-              <div>
-                <div className="text-xs text-stone mb-1">Status</div>
-                <span className="font-mono text-sm text-black">{idea.mvp_status}</span>
-              </div>
-            )}
-            {idea.deploy_url && (
-              <div>
-                <div className="text-xs text-stone mb-1">Deployment</div>
-                <ExternalLink href={idea.deploy_url} className="text-sm">
-                  Live Site
-                </ExternalLink>
-              </div>
-            )}
-            {idea.repo_url && (
-              <div>
-                <div className="text-xs text-stone mb-1">Repository</div>
-                <ExternalLink href={idea.repo_url} className="text-sm">
-                  GitHub
-                </ExternalLink>
-              </div>
-            )}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base font-medium text-zinc-50">MVP</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-6">
+              {idea.mvp_status && (
+                <div>
+                  <div className="text-xs text-zinc-500 mb-1">Status</div>
+                  <span className="font-mono text-sm text-zinc-300">{idea.mvp_status}</span>
+                </div>
+              )}
+              {idea.deploy_url && (
+                <div>
+                  <div className="text-xs text-zinc-500 mb-1">Deployment</div>
+                  <ExternalLink href={idea.deploy_url} className="text-sm">
+                    Live Site
+                  </ExternalLink>
+                </div>
+              )}
+              {idea.repo_url && (
+                <div>
+                  <div className="text-xs text-zinc-500 mb-1">Repository</div>
+                  <ExternalLink href={idea.repo_url} className="text-sm">
+                    GitHub
+                  </ExternalLink>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       {/* Recent Activity */}
-      <div className="bg-ivory-warm border border-mist rounded-precision p-6">
-        <h2 className="font-serif text-lg text-black mb-4">Recent Activity</h2>
-        {events.length === 0 ? (
-          <p className="text-stone text-sm">No activity recorded for this idea.</p>
-        ) : (
-          <div className="space-y-3">
-            {events.map((event) => (
-              <div key={event.id} className="flex items-start gap-3 text-sm">
-                <span className="text-stone font-mono text-xs w-16 shrink-0 pt-0.5">
-                  {formatTimeAgo(event.timestamp)}
-                </span>
-                <span className="font-mono text-xs text-stone w-6 shrink-0 pt-0.5">
-                  {EVENT_ICONS[event.event_type] || ".."}
-                </span>
-                <span className={SEVERITY_COLORS[event.severity] || "text-graphite"}>
-                  {formatEvent(event)}
-                </span>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base font-medium text-zinc-50">Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {events.length === 0 ? (
+            <p className="text-zinc-500 text-sm">No activity recorded for this idea.</p>
+          ) : (
+            <ScrollArea className="h-[300px]">
+              <div className="space-y-1">
+                {events.map((event) => {
+                  const Icon = EVENT_ICONS[event.event_type] || Circle;
+                  const borderColor = SEVERITY_BORDER_COLORS[event.severity] || "border-l-zinc-800";
+                  return (
+                    <div
+                      key={event.id}
+                      className={`flex items-start gap-3 text-sm px-3 py-2 rounded-sm border-l-2 ${borderColor}`}
+                    >
+                      <Icon className="h-3.5 w-3.5 text-zinc-500 shrink-0 mt-0.5" />
+                      <span className={`flex-1 ${SEVERITY_COLORS[event.severity] || "text-zinc-300"}`}>
+                        {formatEvent(event)}
+                      </span>
+                      <span className="text-zinc-600 font-mono text-xs shrink-0">
+                        {formatTimeAgo(event.timestamp)}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            </ScrollArea>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Metadata footer */}
-      <div className="flex justify-between text-xs text-stone">
+      <div className="flex justify-between text-xs text-zinc-600">
         <span>
           Source: {idea.source} &middot; Created{" "}
           {new Date(idea.created_at).toLocaleDateString()}

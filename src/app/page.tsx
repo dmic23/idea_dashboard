@@ -3,7 +3,7 @@ import { PipelineFunnel } from "@/components/pipeline-funnel";
 import { ActivityFeed } from "@/components/activity-feed";
 import type { ActivityEvent, DashboardIdea } from "@/lib/types";
 
-export const revalidate = 60; // ISR: revalidate every 60s
+export const revalidate = 60;
 
 export default async function HomePage() {
   const supabase = await createServerSupabaseClient();
@@ -20,9 +20,9 @@ export default async function HomePage() {
     .limit(50);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 motion-preset-fade motion-duration-300">
       <div>
-        <h1 className="font-serif text-3xl text-black tracking-tight mb-6">
+        <h1 className="text-2xl font-semibold text-zinc-50 tracking-tight mb-6">
           Pipeline
         </h1>
         <PipelineFunnel ideas={(ideas as DashboardIdea[]) || []} />
@@ -30,7 +30,7 @@ export default async function HomePage() {
 
       <ActivityFeed initialEvents={(events as ActivityEvent[]) || []} />
 
-      <p className="text-xs text-stone">
+      <p className="text-xs text-zinc-600">
         Last synced:{" "}
         {ideas?.[0]?.synced_at
           ? new Date(ideas[0].synced_at).toLocaleString()

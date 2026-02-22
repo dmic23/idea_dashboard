@@ -36,12 +36,12 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Redirect to login if not authenticated
-  if (!user && request.nextUrl.pathname !== "/login") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
-  }
+  // Auth redirect disabled — personal dashboard, no login required
+  // if (!user && request.nextUrl.pathname !== "/login") {
+  //   const url = request.nextUrl.clone();
+  //   url.pathname = "/login";
+  //   return NextResponse.redirect(url);
+  // }
 
   // Redirect away from login if already authenticated
   if (user && request.nextUrl.pathname === "/login") {

@@ -1,22 +1,28 @@
 import type { ActivityEvent } from "@/lib/types";
 
-export const EVENT_ICONS: Record<string, string> = {
-  idea_advanced: ">>",
-  idea_killed: "xx",
-  idea_created: "++",
-  review_completed: "**",
-  orchestrator_run: "~~",
-  health_check: "ok",
-  mvp_deployed: "->",
-  landing_page_deployed: "->",
-  circuit_breaker_change: "!!",
-  social_post_created: ">>",
+export const EVENT_ICON_NAMES: Record<string, string> = {
+  idea_advanced: "ArrowRight",
+  idea_killed: "X",
+  idea_created: "Plus",
+  review_completed: "Star",
+  orchestrator_run: "RefreshCw",
+  health_check: "Heart",
+  mvp_deployed: "Rocket",
+  landing_page_deployed: "Globe",
+  circuit_breaker_change: "AlertTriangle",
+  social_post_created: "Share2",
 };
 
 export const SEVERITY_COLORS: Record<string, string> = {
-  info: "text-stone",
-  warning: "text-status-yellow",
+  info: "text-zinc-400",
+  warning: "text-status-amber",
   error: "text-status-red",
+};
+
+export const SEVERITY_BORDER_COLORS: Record<string, string> = {
+  info: "border-l-zinc-700",
+  warning: "border-l-status-amber",
+  error: "border-l-status-red",
 };
 
 export function formatTimeAgo(timestamp: string): string {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Nav } from "@/components/nav";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Sidebar } from "@/components/sidebar";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,18 +25,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-ivory text-black font-sans antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground font-sans antialiased`}
       >
-        <Nav />
-        <main className="max-w-7xl mx-auto px-6 py-8">{children}</main>
+        <TooltipProvider>
+          <div className="flex h-screen overflow-hidden">
+            <Sidebar />
+            <main className="flex-1 overflow-auto">
+              <div className="max-w-7xl mx-auto px-6 py-8">{children}</div>
+            </main>
+          </div>
+        </TooltipProvider>
       </body>
     </html>
   );

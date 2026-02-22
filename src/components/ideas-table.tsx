@@ -2,10 +2,28 @@
 
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Search, ChevronUp, ChevronDown } from "lucide-react";
 import { STAGE_ORDER, STAGE_LABELS, STATUS_LABELS, type DashboardIdea, type PipelineStage } from "@/lib/types";
 import { StageBadge } from "@/components/stage-badge";
 import { ScoreDisplay } from "@/components/score-display";
 import { EmptyState } from "@/components/empty-state";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { formatTimeAgo } from "@/lib/format";
 
 type SortField = "title" | "stage" | "latest_score" | "updated_at" | "days_in_stage";
@@ -79,9 +97,11 @@ export function IdeasTable({ ideas }: IdeasTableProps) {
     }
   }
 
-  function sortIndicator(field: SortField) {
-    if (sortField !== field) return "";
-    return sortDir === "asc" ? " ↑" : " ↓";
+  function sortIcon(field: SortField) {
+    if (sortField !== field) return null;
+    return sortDir === "asc"
+      ? <ChevronUp className="h-3 w-3 inline ml-1" />
+      : <ChevronDown className="h-3 w-3 inline ml-1" />;
   }
 
   function updateFilters(stage: string, status: string) {
@@ -98,42 +118,47 @@ export function IdeasTable({ ideas }: IdeasTableProps) {
     <div className="space-y-4">
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
-        <select
-          value={stageFilter}
-          onChange={(e) => updateFilters(e.target.value, statusFilter)}
-          className="bg-ivory-warm border border-mist rounded-precision px-3 py-1.5 text-sm text-graphite font-sans focus:outline-none focus:border-indigo"
-        >
-          <option value="all">All Stages</option>
-          {STAGE_ORDER.map((s) => (
-            <option key={s} value={s}>
-              {STAGE_LABELS[s]}
-            </option>
-          ))}
-          <option value="exited">Exited</option>
-        </select>
+        <Select value={stageFilter} onValueChange={(v) => updateFilters(v, statusFilter)}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue placeholder="All Stages" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Stages</SelectItem>
+            {STAGE_ORDER.map((s) => (
+              <SelectItem key={s} value={s}>
+                {STAGE_LABELS[s]}
+              </SelectItem>
+            ))}
+            <SelectItem value="exited">Exited</SelectItem>
+          </SelectContent>
+        </Select>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => updateFilters(stageFilter, e.target.value)}
-          className="bg-ivory-warm border border-mist rounded-precision px-3 py-1.5 text-sm text-graphite font-sans focus:outline-none focus:border-indigo"
-        >
-          <option value="all">All Status</option>
-          {Object.entries(STATUS_LABELS).map(([k, v]) => (
-            <option key={k} value={k}>
-              {v}
-            </option>
-          ))}
-        </select>
+        <Select value={statusFilter} onValueChange={(v) => updateFilters(stageFilter, v)}>
+          <SelectTrigger className="w-[140px]">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            {Object.entries(STATUS_LABELS).map(([k, v]) => (
+              <SelectItem key={k} value={k}>
+                {v}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search ideas..."
-          className="bg-ivory-warm border border-mist rounded-precision px-3 py-1.5 text-sm text-graphite font-sans focus:outline-none focus:border-indigo w-48"
-        />
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+          <Input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search ideas..."
+            className="pl-9 w-48"
+          />
+        </div>
 
-        <span className="text-xs text-stone ml-auto">
+        <span className="text-xs text-zinc-500 ml-auto">
           {filtered.length} idea{filtered.length !== 1 ? "s" : ""}
         </span>
       </div>
@@ -142,84 +167,79 @@ export function IdeasTable({ ideas }: IdeasTableProps) {
       {filtered.length === 0 ? (
         <EmptyState message="No ideas match the current filters." />
       ) : (
-        <div className="bg-ivory-warm border border-mist rounded-precision overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-mist text-left">
-                  <th
-                    className="px-4 py-3 text-stone text-xs font-sans font-medium cursor-pointer hover:text-graphite"
-                    onClick={() => toggleSort("title")}
-                  >
-                    Title{sortIndicator("title")}
-                  </th>
-                  <th
-                    className="px-4 py-3 text-stone text-xs font-sans font-medium cursor-pointer hover:text-graphite"
-                    onClick={() => toggleSort("stage")}
-                  >
-                    Stage{sortIndicator("stage")}
-                  </th>
-                  <th
-                    className="px-4 py-3 text-stone text-xs font-sans font-medium cursor-pointer hover:text-graphite text-right"
-                    onClick={() => toggleSort("latest_score")}
-                  >
-                    Score{sortIndicator("latest_score")}
-                  </th>
-                  <th
-                    className="px-4 py-3 text-stone text-xs font-sans font-medium cursor-pointer hover:text-graphite text-right"
-                    onClick={() => toggleSort("days_in_stage")}
-                  >
-                    Days{sortIndicator("days_in_stage")}
-                  </th>
-                  <th
-                    className="px-4 py-3 text-stone text-xs font-sans font-medium cursor-pointer hover:text-graphite text-right"
-                    onClick={() => toggleSort("updated_at")}
-                  >
-                    Updated{sortIndicator("updated_at")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((idea) => (
-                  <tr
-                    key={idea.id}
-                    onClick={() => router.push(`/ideas/${idea.id}`)}
-                    className="border-b border-mist/50 last:border-0 cursor-pointer hover:bg-ivory transition-colors"
-                  >
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-black truncate max-w-[300px]">
-                        {idea.title}
+        <div className="rounded-lg border border-border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead
+                  className="cursor-pointer hover:text-zinc-300"
+                  onClick={() => toggleSort("title")}
+                >
+                  Title {sortIcon("title")}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer hover:text-zinc-300"
+                  onClick={() => toggleSort("stage")}
+                >
+                  Stage {sortIcon("stage")}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer hover:text-zinc-300 text-right"
+                  onClick={() => toggleSort("latest_score")}
+                >
+                  Score {sortIcon("latest_score")}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer hover:text-zinc-300 text-right"
+                  onClick={() => toggleSort("days_in_stage")}
+                >
+                  Days {sortIcon("days_in_stage")}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer hover:text-zinc-300 text-right"
+                  onClick={() => toggleSort("updated_at")}
+                >
+                  Updated {sortIcon("updated_at")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((idea) => (
+                <TableRow
+                  key={idea.id}
+                  onClick={() => router.push(`/ideas/${idea.id}`)}
+                  className="cursor-pointer"
+                >
+                  <TableCell>
+                    <div className="font-medium text-zinc-50 truncate max-w-[300px]">
+                      {idea.title}
+                    </div>
+                    {idea.domain_tags.length > 0 && (
+                      <div className="flex gap-1 mt-1">
+                        {idea.domain_tags.slice(0, 3).map((tag) => (
+                          <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {tag}
+                          </Badge>
+                        ))}
                       </div>
-                      {idea.domain_tags.length > 0 && (
-                        <div className="flex gap-1 mt-1">
-                          {idea.domain_tags.slice(0, 3).map((tag) => (
-                            <span
-                              key={tag}
-                              className="text-[10px] text-stone bg-ivory px-1.5 py-0.5 rounded-precision"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <StageBadge stage={idea.stage} />
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <ScoreDisplay score={idea.latest_score} />
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono text-stone">
-                      {idea.days_in_stage}
-                    </td>
-                    <td className="px-4 py-3 text-right text-stone text-xs">
-                      {formatTimeAgo(idea.updated_at)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <StageBadge stage={idea.stage} />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <ScoreDisplay score={idea.latest_score} />
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-zinc-500">
+                    {idea.days_in_stage}
+                  </TableCell>
+                  <TableCell className="text-right text-zinc-500 text-xs">
+                    {formatTimeAgo(idea.updated_at)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       )}
     </div>

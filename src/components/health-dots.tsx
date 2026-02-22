@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import type { HealthSnapshot } from "@/lib/types";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export function HealthDots() {
   const [health, setHealth] = useState<HealthSnapshot | null>(null);
@@ -38,26 +40,50 @@ export function HealthDots() {
   }, [supabase]);
 
   function dotColor(status: string | undefined): string {
-    if (!status) return "bg-status-gray";
-    if (status === "healthy") return "bg-status-green";
-    if (status.startsWith("error")) return "bg-status-red";
-    return "bg-status-yellow";
+    if (!status) return "bg-zinc-700";
+    if (status === "healthy") return "bg-status-green animate-pulse-dot";
+    if (status.startsWith("error")) return "bg-status-red animate-pulse-dot";
+    return "bg-status-amber animate-pulse-dot";
   }
 
+  function dotLabel(status: string | undefined): string {
+    if (!status) return "Unknown";
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  const apiStatus =
+    health?.circuit_breakers && Object.values(health.circuit_breakers).some((v) => v !== "closed")
+      ? "degraded"
+      : health
+        ? "healthy"
+        : undefined;
+
   return (
-    <Link href="/health" className="flex items-center gap-2">
-      <span className={`w-2 h-2 rounded-full ${dotColor(health?.database)}`} title="Database" />
-      <span className={`w-2 h-2 rounded-full ${dotColor(health?.redis)}`} title="Redis" />
-      <span
-        className={`w-2 h-2 rounded-full ${
-          health?.circuit_breakers && Object.values(health.circuit_breakers).some((v) => v !== "closed")
-            ? "bg-status-yellow"
-            : health
-              ? "bg-status-green"
-              : "bg-status-gray"
-        }`}
-        title="APIs"
-      />
+    <Link href="/health" className="flex items-center gap-1.5">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn("w-2 h-2 rounded-full", dotColor(health?.database))} />
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          Database: {dotLabel(health?.database)}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn("w-2 h-2 rounded-full", dotColor(health?.redis))} />
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          Redis: {dotLabel(health?.redis)}
+        </TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={cn("w-2 h-2 rounded-full", dotColor(apiStatus))} />
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          APIs: {dotLabel(apiStatus)}
+        </TooltipContent>
+      </Tooltip>
     </Link>
   );
 }

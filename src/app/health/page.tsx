@@ -28,8 +28,8 @@ export default async function HealthPage() {
     .limit(20);
 
   return (
-    <div>
-      <h1 className="font-serif text-3xl text-black tracking-tight mb-6">
+    <div className="motion-preset-fade motion-duration-300">
+      <h1 className="text-2xl font-semibold text-zinc-50 tracking-tight mb-6">
         System Health
       </h1>
       <HealthOverview

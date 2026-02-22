@@ -1,15 +1,18 @@
+import { Globe, FileCode, GithubIcon } from "lucide-react";
 import type { DashboardBusiness } from "@/lib/types";
-import { ExternalLink } from "@/components/external-link";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/empty-state";
+import { cn } from "@/lib/utils";
 
 interface BusinessGridProps {
   businesses: DashboardBusiness[];
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  operating: "bg-status-green/10 text-status-green",
-  paused: "bg-status-yellow/10 text-status-yellow",
-  killed: "bg-status-red/10 text-status-red",
+const STATUS_VARIANTS: Record<string, string> = {
+  operating: "bg-status-green/10 text-status-green border-status-green/20",
+  paused: "bg-status-amber/10 text-status-amber border-status-amber/20",
+  killed: "bg-status-red/10 text-status-red border-status-red/20",
 };
 
 function formatCurrency(value: number): string {
@@ -30,81 +33,106 @@ export function BusinessGrid({ businesses }: BusinessGridProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {businesses.map((biz) => (
-        <div
+      {businesses.map((biz, i) => (
+        <Card
           key={biz.id}
-          className="bg-ivory-warm border border-mist rounded-precision p-6 space-y-4"
-        >
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="font-serif text-lg text-black">{biz.name}</h3>
-              {biz.domain && (
-                <p className="text-xs text-stone mt-0.5">{biz.domain}</p>
-              )}
-            </div>
-            <span
-              className={`text-xs px-2 py-0.5 rounded-precision font-mono ${
-                STATUS_COLORS[biz.status] || "bg-stone/10 text-stone"
-              }`}
-            >
-              {biz.status}
-            </span>
-          </div>
-
-          {/* Financial Metrics */}
-          <div className="grid grid-cols-3 gap-3">
-            <Metric label="Revenue" value={formatCurrency(biz.revenue)} />
-            <Metric label="Costs" value={formatCurrency(biz.costs)} />
-            <Metric
-              label="Profit"
-              value={formatCurrency(biz.profit)}
-              color={biz.profit >= 0 ? "text-status-green" : "text-status-red"}
-            />
-          </div>
-
-          {/* Operational Metrics */}
-          <div className="grid grid-cols-3 gap-3 pt-2 border-t border-mist/50">
-            <Metric label="MRR" value={formatCurrency(biz.mrr)} />
-            <Metric label="Users" value={String(biz.users)} />
-            <Metric
-              label="Churn"
-              value={
-                biz.churn_rate > 0
-                  ? `${(biz.churn_rate * 100).toFixed(1)}%`
-                  : "--"
-              }
-              color={
-                biz.churn_rate > 0.1
-                  ? "text-status-red"
-                  : biz.churn_rate > 0.05
-                    ? "text-status-yellow"
-                    : "text-status-green"
-              }
-            />
-          </div>
-
-          {/* Links */}
-          {(biz.deploy_url || biz.repo_url || biz.validation_url) && (
-            <div className="flex flex-wrap gap-4 pt-2 border-t border-mist/50">
-              {biz.deploy_url && (
-                <ExternalLink href={biz.deploy_url} className="text-xs">
-                  Live Site
-                </ExternalLink>
-              )}
-              {biz.validation_url && (
-                <ExternalLink href={biz.validation_url} className="text-xs">
-                  Landing Page
-                </ExternalLink>
-              )}
-              {biz.repo_url && (
-                <ExternalLink href={biz.repo_url} className="text-xs">
-                  GitHub
-                </ExternalLink>
-              )}
-            </div>
+          className={cn(
+            "motion-preset-fade motion-duration-300",
+            i > 0 && `motion-delay-[${i * 100}ms]`
           )}
-        </div>
+        >
+          <CardContent className="pt-6 space-y-4">
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-base font-medium text-zinc-50">{biz.name}</h3>
+                {biz.domain && (
+                  <p className="text-xs text-zinc-500 mt-0.5">{biz.domain}</p>
+                )}
+              </div>
+              <Badge
+                variant="outline"
+                className={cn(
+                  "font-mono text-[11px] border",
+                  STATUS_VARIANTS[biz.status] || "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                )}
+              >
+                {biz.status}
+              </Badge>
+            </div>
+
+            {/* Financial Metrics */}
+            <div className="grid grid-cols-3 gap-3">
+              <Metric label="Revenue" value={formatCurrency(biz.revenue)} />
+              <Metric label="Costs" value={formatCurrency(biz.costs)} />
+              <Metric
+                label="Profit"
+                value={formatCurrency(biz.profit)}
+                color={biz.profit >= 0 ? "text-status-green" : "text-status-red"}
+              />
+            </div>
+
+            {/* Operational Metrics */}
+            <div className="grid grid-cols-3 gap-3 pt-3 border-t border-border">
+              <Metric label="MRR" value={formatCurrency(biz.mrr)} />
+              <Metric label="Users" value={String(biz.users)} />
+              <Metric
+                label="Churn"
+                value={
+                  biz.churn_rate > 0
+                    ? `${(biz.churn_rate * 100).toFixed(1)}%`
+                    : "--"
+                }
+                color={
+                  biz.churn_rate > 0.1
+                    ? "text-status-red"
+                    : biz.churn_rate > 0.05
+                      ? "text-status-amber"
+                      : "text-status-green"
+                }
+              />
+            </div>
+
+            {/* Links */}
+            {(biz.deploy_url || biz.repo_url || biz.validation_url) && (
+              <div className="flex flex-wrap gap-4 pt-3 border-t border-border">
+                {biz.deploy_url && (
+                  <a
+                    href={biz.deploy_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-emerald-500 hover:text-emerald-400 transition-colors"
+                  >
+                    <Globe className="h-3 w-3" />
+                    Live Site
+                  </a>
+                )}
+                {biz.validation_url && (
+                  <a
+                    href={biz.validation_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-emerald-500 hover:text-emerald-400 transition-colors"
+                  >
+                    <FileCode className="h-3 w-3" />
+                    Landing Page
+                  </a>
+                )}
+                {biz.repo_url && (
+                  <a
+                    href={biz.repo_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-emerald-500 hover:text-emerald-400 transition-colors"
+                  >
+                    <GithubIcon className="h-3 w-3" />
+                    GitHub
+                  </a>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
@@ -121,8 +149,8 @@ function Metric({
 }) {
   return (
     <div>
-      <div className="text-[10px] text-stone">{label}</div>
-      <div className={`font-mono text-sm ${color || "text-black"}`}>
+      <div className="text-[10px] text-zinc-500">{label}</div>
+      <div className={cn("font-mono text-sm", color || "text-zinc-50")}>
         {value}
       </div>
     </div>

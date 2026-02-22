@@ -9,6 +9,7 @@ import {
   Activity,
   Building2,
   BrainCircuit,
+  ChartBar,
   PanelLeftClose,
   PanelLeftOpen,
   Menu,
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { href: "/health", label: "Health", icon: Activity },
   { href: "/businesses", label: "Businesses", icon: Building2 },
   { href: "/patterns", label: "Patterns", icon: BrainCircuit },
+  { href: "/analytics", label: "Analytics", icon: ChartBar },
 ];
 
 function SidebarContent({

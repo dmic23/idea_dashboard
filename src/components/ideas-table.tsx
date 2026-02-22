@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, ChevronUp, ChevronDown, CircleAlert } from "lucide-react";
 import { STAGE_ORDER, STAGE_LABELS, STATUS_LABELS, type DashboardIdea, type PipelineStage } from "@/lib/types";
 import { StageBadge } from "@/components/stage-badge";
 import { ScoreDisplay } from "@/components/score-display";
@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/table";
 import { formatTimeAgo } from "@/lib/format";
 
-type SortField = "title" | "stage" | "latest_score" | "updated_at" | "days_in_stage";
+type SortField = "title" | "stage" | "latest_score" | "updated_at" | "days_in_stage" | "total_cost";
 type SortDir = "asc" | "desc";
 
 interface IdeasTableProps {
@@ -80,6 +80,9 @@ export function IdeasTable({ ideas }: IdeasTableProps) {
           break;
         case "days_in_stage":
           cmp = a.days_in_stage - b.days_in_stage;
+          break;
+        case "total_cost":
+          cmp = (a.total_cost ?? 0) - (b.total_cost ?? 0);
           break;
       }
       return sortDir === "asc" ? cmp : -cmp;
@@ -183,12 +186,20 @@ export function IdeasTable({ ideas }: IdeasTableProps) {
                 >
                   Stage {sortIcon("stage")}
                 </TableHead>
+                <TableHead className="w-20">Experts</TableHead>
                 <TableHead
                   className="cursor-pointer hover:text-zinc-300 text-right"
                   onClick={() => toggleSort("latest_score")}
                 >
                   Score {sortIcon("latest_score")}
                 </TableHead>
+                <TableHead
+                  className="cursor-pointer hover:text-zinc-300 text-right"
+                  onClick={() => toggleSort("total_cost")}
+                >
+                  Cost {sortIcon("total_cost")}
+                </TableHead>
+                <TableHead className="w-10">Risk</TableHead>
                 <TableHead
                   className="cursor-pointer hover:text-zinc-300 text-right"
                   onClick={() => toggleSort("days_in_stage")}
@@ -227,8 +238,25 @@ export function IdeasTable({ ideas }: IdeasTableProps) {
                   <TableCell>
                     <StageBadge stage={idea.stage} />
                   </TableCell>
+                  <TableCell className="text-center">
+                    <span className="font-mono text-xs text-zinc-400">
+                      {idea.expert_count > 0 ? idea.expert_count : "--"}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-right">
                     <ScoreDisplay score={idea.latest_score} />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span className="font-mono text-xs text-zinc-400">
+                      {idea.total_cost > 0 ? `$${idea.total_cost.toFixed(0)}` : "--"}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {idea.latest_decision === "kill" || idea.latest_decision === "KILL" ? (
+                      <CircleAlert className="h-3 w-3 text-status-red inline" />
+                    ) : idea.latest_score !== null && idea.latest_score < 6 ? (
+                      <CircleAlert className="h-3 w-3 text-status-amber inline" />
+                    ) : null}
                   </TableCell>
                   <TableCell className="text-right font-mono text-zinc-500">
                     {idea.days_in_stage}

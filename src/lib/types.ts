@@ -20,6 +20,18 @@ export interface DashboardIdea {
   mvp_status: string | null;
   deploy_url: string | null;
   repo_url: string | null;
+  source_url: string | null;
+  target_user: string | null;
+  differentiation: string | null;
+  mvp_scope: string | null;
+  mvp_tech_stack: Record<string, unknown> | null;
+  total_cost: number;
+  expert_count: number;
+  pivot_count: number;
+  decision_count: number;
+  has_research: boolean;
+  validation_type: string | null;
+  ad_spend: number;
   synced_at: string;
 }
 
@@ -115,5 +127,77 @@ export interface DashboardPattern {
   sample_size: number;
   conditions: Record<string, unknown>;
   outcome: Record<string, unknown>;
+  synced_at: string;
+}
+
+export interface DashboardResearch {
+  id: string;
+  idea_id: string;
+  stage: string;
+  market_size: { tam?: string; sam?: string; som?: string; growth_rate?: string } | null;
+  competitors: Array<{ name: string; url?: string; strengths?: string[]; weaknesses?: string[] }> | null;
+  feasibility: { score?: number; technical_risk?: string; dependencies?: string[] } | null;
+  business_model: { model?: string; revenue_streams?: string[]; unit_economics?: Record<string, unknown> } | null;
+  ai_operability_score: number | null;
+  created_at: string;
+  synced_at: string;
+}
+
+export interface DashboardReview {
+  id: string;
+  idea_id: string;
+  gate: string;
+  expert_scores: Record<string, number>;
+  weighted_average: number;
+  veto_flags: Array<{ expert: string; reason: string; severity: string }>;
+  decision: string;
+  reasoning: string;
+  iteration_number: number;
+  created_at: string;
+  synced_at: string;
+}
+
+export interface DashboardExpertReview {
+  id: string;
+  review_id: string;
+  idea_id: string;
+  expert_type: string;
+  score: number;
+  reasoning: string;
+  concerns: string[];
+  created_at: string;
+  synced_at: string;
+}
+
+export interface DashboardCost {
+  id: string;
+  idea_id: string;
+  category: string;
+  amount: number;
+  description: string;
+  created_at: string;
+  synced_at: string;
+}
+
+export interface DashboardDecision {
+  id: string;
+  idea_id: string;
+  decision_type: string;
+  made_by: string;
+  reasoning: string;
+  created_at: string;
+  synced_at: string;
+}
+
+export interface DashboardPivot {
+  id: string;
+  idea_id: string;
+  pivot_number: number;
+  pivot_type: string;
+  original_state: Record<string, unknown>;
+  new_direction: string;
+  reasoning: string;
+  outcome: string;
+  created_at: string;
   synced_at: string;
 }

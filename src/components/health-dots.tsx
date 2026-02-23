@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import type { HealthSnapshot } from "@/lib/types";
@@ -9,9 +9,13 @@ import { cn } from "@/lib/utils";
 
 export function HealthDots() {
   const [health, setHealth] = useState<HealthSnapshot | null>(null);
-  const supabase = createClient();
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
 
   useEffect(() => {
+    // Only create client in the browser — never during SSR/prerendering
+    const supabase = createClient();
+    supabaseRef.current = supabase;
+
     async function fetchHealth() {
       const { data } = await supabase
         .from("dashboard_health")
@@ -37,7 +41,7 @@ export function HealthDots() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase]);
+  }, []);
 
   function dotColor(status: string | undefined): string {
     if (!status) return "bg-zinc-700";

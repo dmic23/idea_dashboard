@@ -1,4 +1,4 @@
-import { Globe, FileCode, GithubIcon } from "lucide-react";
+import { Globe, FileCode, GithubIcon, CircleAlert, Loader2 } from "lucide-react";
 import type { DashboardBusiness } from "@/lib/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -93,20 +93,46 @@ export function BusinessGrid({ businesses }: BusinessGridProps) {
               />
             </div>
 
-            {/* Links */}
-            {(biz.deploy_url || biz.repo_url || biz.validation_url) && (
+            {/* Links & Deploy Status */}
+            {(biz.deploy_url || biz.repo_url || biz.validation_url || biz.mvp_status) && (
               <div className="flex flex-wrap gap-4 pt-3 border-t border-border">
-                {biz.deploy_url && (
+                {biz.deploy_url && biz.mvp_status === "deployed" ? (
                   <a
                     href={biz.deploy_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-xs text-emerald-500 hover:text-emerald-400 transition-colors"
                   >
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                    </span>
+                    Live Site
+                  </a>
+                ) : biz.mvp_status === "failed" ? (
+                  <span
+                    className="inline-flex items-center gap-1.5 text-xs text-red-400 cursor-default"
+                    title={biz.build_error || "Build failed"}
+                  >
+                    <CircleAlert className="h-3 w-3" />
+                    Build Failed
+                  </span>
+                ) : biz.mvp_status === "building" ? (
+                  <span className="inline-flex items-center gap-1.5 text-xs text-amber-400">
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                    Building...
+                  </span>
+                ) : biz.deploy_url ? (
+                  <a
+                    href={biz.deploy_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-zinc-300 transition-colors"
+                  >
                     <Globe className="h-3 w-3" />
                     Live Site
                   </a>
-                )}
+                ) : null}
                 {biz.validation_url && (
                   <a
                     href={biz.validation_url}

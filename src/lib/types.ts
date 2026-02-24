@@ -115,6 +115,8 @@ export interface DashboardBusiness {
   launched_at: string | null;
   deploy_url: string | null;
   repo_url: string | null;
+  mvp_status: string | null;
+  build_error: string | null;
   validation_url: string | null;
   synced_at: string;
 }

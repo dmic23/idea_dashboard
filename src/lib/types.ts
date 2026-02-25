@@ -203,3 +203,118 @@ export interface DashboardPivot {
   created_at: string;
   synced_at: string;
 }
+
+// Studio types
+
+export type StudioPhase =
+  | "INTAKE"
+  | "BUILD"
+  | "DISTRIBUTE"
+  | "MEASURE"
+  | "ITERATE"
+  | "SCALE"
+  | "KILLED";
+
+export const STUDIO_PHASE_ORDER: StudioPhase[] = [
+  "INTAKE",
+  "BUILD",
+  "DISTRIBUTE",
+  "MEASURE",
+  "ITERATE",
+  "SCALE",
+];
+
+export const STUDIO_PHASE_LABELS: Record<StudioPhase, string> = {
+  INTAKE: "Intake",
+  BUILD: "Build",
+  DISTRIBUTE: "Distribute",
+  MEASURE: "Measure",
+  ITERATE: "Iterate",
+  SCALE: "Scale",
+  KILLED: "Killed",
+};
+
+export interface DashboardStudioProduct {
+  id: string;
+  idea_id: string;
+  name: string;
+  phase: StudioPhase;
+  customer_type: string;
+  form_factor: string;
+  budget_tier: number;
+  budget_spent: number;
+  iteration_count: number;
+  failed_iterations: number;
+  deploy_url: string | null;
+  repo_url: string | null;
+  created_at: string;
+  killed_at: string | null;
+  kill_reason: string | null;
+  agent_count: number;
+  active_agent_types: string[];
+  visitors: number;
+  signups: number;
+  active_users: number;
+  d7_retention: number;
+  recommendation: string | null;
+  latest_iteration_number: number;
+  latest_iteration_outcome: string | null;
+  distribution_post_count: number;
+  synced_at: string;
+}
+
+export interface DashboardStudioActivity {
+  id: string;
+  product_id: string;
+  product_name: string;
+  event_type: string;
+  title: string;
+  detail: string;
+  outcome: string | null;
+  event_at: string;
+  synced_at: string;
+}
+
+export interface DashboardStudioLearning {
+  id: string;
+  product_id: string | null;
+  product_name: string | null;
+  category: string;
+  title: string;
+  insight: string;
+  confidence: number | null;
+  times_applied: number;
+  times_validated: number;
+  created_at: string;
+  synced_at: string;
+}
+
+export const FORM_FACTOR_LABELS: Record<string, string> = {
+  WEB_APP: "Web App",
+  API: "API",
+  EXTENSION: "Extension",
+  CLI: "CLI",
+  BOT: "Bot",
+  MARKETPLACE: "Marketplace",
+  MCP_SERVER: "MCP Server",
+};
+
+export const CUSTOMER_TYPE_LABELS: Record<string, string> = {
+  HUMAN: "B2C",
+  AGENT: "B2A",
+};
+
+export const AGENT_TYPE_LABELS: Record<string, string> = {
+  PRODUCT_LEAD: "Product Lead",
+  DESIGN: "Design",
+  ENGINEERING: "Engineering",
+  DISTRIBUTION: "Distribution",
+  ANALYTICS: "Analytics",
+  OPERATIONS: "Operations",
+  SALES: "Sales",
+  SUPPORT: "Support",
+  MARKETING: "Marketing",
+  SOCIAL: "Social",
+  SEO: "SEO",
+  PARTNERSHIPS: "Partnerships",
+};
